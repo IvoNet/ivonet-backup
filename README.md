@@ -6,6 +6,14 @@ The code in this project belongs to my remote backup system.
 
 In this article it is further explained TODO
 
+## Usage
+
+I've made these scripts Open Source but they are completely
+tailor made for my situation.
+
+Public private keys are needed and my "Click-On-Click-Off" system.
+
+
 ## License
 
     Copyright (c) 2018 Ivo Woltring <WebMaster@ivonet.nl>

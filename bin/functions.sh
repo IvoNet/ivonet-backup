@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+DEBUG="0"
+
+debug() {
+    if [ "$DEBUG" == "1" ]; then
+       echo "$@"
+    fi
+}
+
+export backup_date="$(date +"%y-%m-%d")"
 
 parse_yaml() {
    # syntax: parse_yaml path_to_yaml_file.yml [prefix]
@@ -21,3 +30,18 @@ parse_yaml() {
       }
    }'
 }
+
+eval $(parse_yaml ./config/backup.yml "backup")
+debug $(parse_yaml ./config/backup.yml "backup")
+
+do_scp() {
+  echo "Copying $1 to remote $2"
+  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
+}
+
+do_ssh() {
+  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${backup_endpoint_user}@${backup_endpoint_ip} -t $@ 2>&1 | grep -v "^Warning: Permanently added" | grep -v "Pseudo-terminal"
+}
+
+
+

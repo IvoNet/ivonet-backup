@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
-export LOG="~/logs/"
-export BIN="~/bin"
+. functions.sh
 
-# include parse_yaml function
-. ${BIN}/parse_yaml.sh
-eval $(parse_yaml ~/config/application.yml "backup")
+# Turn on the disk
+diskon.sh
 
-# access yaml content
-echo $backup_disk_name
-echo $backup_disk_uuid
-
-exec ${BIN}/watch_for_disk.sh </dev/null >>$LOG 2>&1 &
+echo "${backup_watch_description}"
+inotifywait ${backup_watch_command} -e create |
+    while read path action file; do
+        echo "Mounting disk: '$file'"
+        if [ ${file} == "${backup_disk_uuid}" ]
+        then
+            echo "${backup_watch_action_description_yes}"
+            mount ${backup_disk_mountpoint}
+        fi
+    done
