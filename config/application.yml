@@ -1,8 +1,8 @@
 # values in this file are for test purposes
 
 endpoint:
-  ip: 192.168.2.230
   user: ivonet
+  ip: 192.168.2.230
 
 disk:
   uuid: 647ef8a7-583c-4c15-882b-78bbaec144cd
@@ -10,7 +10,7 @@ disk:
 
 watch:
   description: Start watching the for backup disk to mount...
-  command: ls /dev/disk/by-uid
+  command: /dev/disk/by-uuid
   action:
     description:
       yes: Mounting backup disk

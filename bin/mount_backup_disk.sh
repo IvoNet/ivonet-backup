@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-export LOG="~/logs"
+export LOG="~/logs/"
 export BIN="~/bin"
 
 # include parse_yaml function
 . ${BIN}/parse_yaml.sh
-eval $(${BIN}/parse_yaml ~/config/application.yml "backup")
+eval $(parse_yaml ~/config/application.yml "backup")
 
 # access yaml content
 echo $backup_disk_name
