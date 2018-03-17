@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
-. functions.sh
+. ./bin/functions.sh
+
+if [ "$(cat /etc/mtab|grep ${backup_disk_mountpoint} |wc -l)" == "1" ]; then
+  exit 0
+fi
 
 # Turn on the disk
-diskon.sh
+./bin/diskon.sh
 
 echo "${backup_watch_description}"
 inotifywait ${backup_watch_command} -e create |

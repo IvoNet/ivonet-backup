@@ -5,6 +5,7 @@
 # Do not forget to configure the config/application.yml file
 ##############################################################################
 # include parse_yaml function
+export DEBUG="1"
 . ./bin/functions.sh
 
 if [ -z "${backup_endpoint_user}" ]; then
@@ -18,5 +19,8 @@ fi
 
 do_scp setup/setup.sh /home/${backup_endpoint_user}/setup.sh
 do_ssh sh ./setup.sh
-do_scp "bin/*" /home/${backup_endpoint_user}/bin
-do_scp "config/*" /home/${backup_endpoint_user}/config
+
+do_rsync "bin/*" ./bin
+do_rsync "config/*" ./config
+
+do_ssh sh ./setup.sh

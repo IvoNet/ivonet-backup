@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBUG="0"
+export PATH=~/bin:$PATH
 
 debug() {
     if [ "$DEBUG" == "1" ]; then
@@ -36,12 +36,24 @@ debug $(parse_yaml ./config/backup.yml "backup")
 
 do_scp() {
   echo "Copying $1 to remote $2"
-  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
+#  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
+#  scp $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
+  scp $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2
 }
 
 do_ssh() {
-  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${backup_endpoint_user}@${backup_endpoint_ip} -t $@ 2>&1 | grep -v "^Warning: Permanently added" | grep -v "Pseudo-terminal"
+#  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${backup_endpoint_user}@${backup_endpoint_ip} -t $@ 2>&1 | grep -v "^Warning: Permanently added" | grep -v "Pseudo-terminal"
+#  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${backup_endpoint_user}@${backup_endpoint_ip} -tt "$@"
+  ssh -n ${backup_endpoint_user}@${backup_endpoint_ip} -t $@ 2>&1 | grep -v "Pseudo-terminal"
 }
 
+do_rsync() {
+  rsync -tuavhP --partial-dir=.rsync $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2
+}
 
-
+do_backup() {
+  echo "Backup up: $@"
+  do_ssh mkdir -p "${backup_disk_mountpoint}/$@"
+  rsync -tuaqhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
+#  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
+}
