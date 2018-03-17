@@ -21,3 +21,4 @@ if [ ! -d "./logs" ]; then
   echo "Created logs folder"
 fi
 
+touch ./config/volumes.txt

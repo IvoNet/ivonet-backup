@@ -13,6 +13,21 @@ tailor made for my situation.
 
 Public private keys are needed and my "Click-On-Click-Off" system.
 
+## volumes.txt
+
+Create this file in the config folder and put a fully qualified path of a folder you want to backup per line
+
+e.g.
+
+volumes.txt:
+
+```text
+/volume1/important/data
+/volume1/photos/2018
+```
+
+This file will not be created by default
+
 
 ## License
 
