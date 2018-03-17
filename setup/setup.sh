@@ -20,5 +20,3 @@ if [ ! -d "./logs" ]; then
   mkdir -p ./logs
   echo "Created logs folder"
 fi
-
-touch ./config/volumes.txt
