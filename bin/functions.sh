@@ -52,25 +52,20 @@ end_slash() {
 
 do_scp() {
   echo "Copying $1 to remote $2"
-#  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
-#  scp $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
   scp $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2
 }
 
 do_ssh() {
-#  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${backup_endpoint_user}@${backup_endpoint_ip} -t $@ 2>&1 | grep -v "^Warning: Permanently added" | grep -v "Pseudo-terminal"
-#  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${backup_endpoint_user}@${backup_endpoint_ip} -tt "$@"
   ssh -n ${backup_endpoint_user}@${backup_endpoint_ip} -t $@ 2>&1 | grep -v "Pseudo-terminal"
 }
 
 do_rsync() {
+  # will not delete files on the other side
   rsync -tuavhP --partial-dir=.rsync $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2
 }
 
 do_backup() {
   echo "Backing up: $@"
   local PARAM="$(pre_slash "$@")"
-  #do_ssh mkdir -p "${backup_disk_mountpoint}${PARAM}"
   rsync -tuavhP --delete --partial-dir=.rsync "$(end_slash "$@")" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}${PARAM}" 2>&1 | grep -v "Permission denied"
-#  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
 }
