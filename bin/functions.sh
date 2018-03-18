@@ -69,8 +69,8 @@ do_rsync() {
 
 do_backup() {
   echo "Backing up: $@"
-  local PARAM="$(end_slash "$(pre_slash "$@")")"
+  local PARAM="$(pre_slash "$@")"
   do_ssh mkdir -p "${backup_disk_mountpoint}${PARAM}"
-  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}${PARAM}" 2>&1 | grep -v "Permission denied"
+  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}"$(end_slash "${PARAM}")"" 2>&1 | grep -v "Permission denied"
 #  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
 }
