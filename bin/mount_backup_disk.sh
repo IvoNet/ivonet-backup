@@ -3,7 +3,8 @@
 . ./bin/functions.sh
 
 if [ "$(cat /etc/mtab|grep ${backup_disk_mountpoint} |wc -l)" == "1" ]; then
-  exit 0
+  echo "Backup disk already mounted. Assuming backup already in progress..."
+  exit 1
 fi
 
 # Turn on the disk

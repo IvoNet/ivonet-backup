@@ -42,6 +42,14 @@ pre_slash() {
    fi
 }
 
+end_slash() {
+   if [ ${1: -1} == "/" ]; then
+       echo $1
+   else
+       echo $1/
+   fi
+}
+
 do_scp() {
   echo "Copying $1 to remote $2"
 #  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
@@ -61,7 +69,7 @@ do_rsync() {
 
 do_backup() {
   echo "Backing up: $@"
-  local PARAM="$(pre_slash "$@")"
+  local PARAM="$(end_slash "$(pre_slash "$@")")"
   do_ssh mkdir -p "${backup_disk_mountpoint}${PARAM}"
   rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}${PARAM}" 2>&1 | grep -v "Permission denied"
 #  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
