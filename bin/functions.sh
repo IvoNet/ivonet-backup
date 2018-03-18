@@ -34,6 +34,14 @@ parse_yaml() {
 eval $(parse_yaml ./config/backup.yml "backup")
 debug $(parse_yaml ./config/backup.yml "backup")
 
+pre_slash() {
+   if [ ${1:0:1} == "/" ]; then
+       echo $1
+   else
+       echo /$1
+   fi
+}
+
 do_scp() {
   echo "Copying $1 to remote $2"
 #  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 ${backup_endpoint_user}@${backup_endpoint_ip}:$2 2>&1 | grep -v "^Warning: Permanently added"
@@ -52,8 +60,9 @@ do_rsync() {
 }
 
 do_backup() {
-  echo "Backup up: $@"
-  do_ssh mkdir -p "${backup_disk_mountpoint}/$@"
-  rsync -tuaqhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
+  echo "Backing up: $@"
+  local PARAM="$(pre_slash "$@")"
+  do_ssh mkdir -p "${backup_disk_mountpoint}${PARAM}"
+  rsync -tuaqhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}${PARAM}"
 #  rsync -tuavhP --delete --partial-dir=.rsync "$@" ${backup_endpoint_user}@${backup_endpoint_ip}:"${backup_disk_mountpoint}/$@"
 }
